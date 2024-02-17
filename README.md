@@ -1,6 +1,7 @@
 # objx
 
-`rsync`, `scp`, `sftp` for your object store.
+`rsync`, `scp`, `sftp` for your object store. No extra front-end CLI tools
+necessary, use what you already have installed.
 
 # supported object stores
 
