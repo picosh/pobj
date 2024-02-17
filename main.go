@@ -1,4 +1,4 @@
-package objx
+package pobj
 
 import (
 	"github.com/charmbracelet/ssh"

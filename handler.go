@@ -1,4 +1,4 @@
-package objx
+package pobj
 
 import (
 	"bytes"
@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/charmbracelet/ssh"
-	"github.com/picosh/objx/storage"
+	"github.com/picosh/pobj/storage"
 	"github.com/picosh/send/send/utils"
 )
 

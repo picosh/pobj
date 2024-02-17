@@ -10,33 +10,33 @@ import (
 	"time"
 
 	"github.com/charmbracelet/wish"
-	"github.com/picosh/objx"
+	"github.com/picosh/pobj"
 )
 
 func main() {
 	logger := slog.Default()
-	host := objx.GetEnv("SSH_HOST", "0.0.0.0")
-	port := objx.GetEnv("SSH_PORT", "2222")
-	keyPath := objx.GetEnv("SSH_AUTHORIZED_KEYS", "ssh_data/authorized_keys")
+	host := pobj.GetEnv("SSH_HOST", "0.0.0.0")
+	port := pobj.GetEnv("SSH_PORT", "2222")
+	keyPath := pobj.GetEnv("SSH_AUTHORIZED_KEYS", "ssh_data/authorized_keys")
 
-	st, err := objx.EnvDriverDetector(logger)
+	st, err := pobj.EnvDriverDetector(logger)
 	if err != nil {
 		logger.Error(err.Error())
 		return
 	}
 
-	cfg := &objx.Config{
+	cfg := &pobj.Config{
 		Logger:  logger,
 		Storage: st,
 	}
 
-	handler := objx.NewUploadAssetHandler(cfg)
+	handler := pobj.NewUploadAssetHandler(cfg)
 
 	s, err := wish.NewServer(
 		wish.WithAddress(fmt.Sprintf("%s:%s", host, port)),
 		wish.WithHostKeyPath("ssh_data/term_info_ed25519"),
 		wish.WithAuthorizedKeys(keyPath),
-		objx.WithProxy(handler),
+		pobj.WithProxy(handler),
 	)
 	if err != nil {
 		logger.Error(err.Error())

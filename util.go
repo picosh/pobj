@@ -1,10 +1,10 @@
-package objx
+package pobj
 
 import (
 	"log/slog"
 	"os"
 
-	"github.com/picosh/objx/storage"
+	"github.com/picosh/pobj/storage"
 )
 
 func GetEnv(key string, defaultVal string) string {

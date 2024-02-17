@@ -1,4 +1,4 @@
-# objx
+# pobj
 
 `rsync`, `scp`, `sftp` for your object store. No extra front-end CLI tools
 necessary, use what you already have installed.
@@ -7,11 +7,11 @@ necessary, use what you already have installed.
 
 Currently support object stores:
 
-- [filesystem](https://github.com/picosh/objx/blob/9e920bd907fca88ad90a300b02254464e3f598fb/storage/fs.go#L1)
-- [minio](https://github.com/picosh/objx/blob/9e920bd907fca88ad90a300b02254464e3f598fb/storage/minio.go#L1)
+- [filesystem](https://github.com/picosh/pobj/blob/9e920bd907fca88ad90a300b02254464e3f598fb/storage/fs.go#L1)
+- [minio](https://github.com/picosh/pobj/blob/9e920bd907fca88ad90a300b02254464e3f598fb/storage/minio.go#L1)
 
 We provide an
-[interface](https://github.com/picosh/objx/blob/9e920bd907fca88ad90a300b02254464e3f598fb/storage/storage.go#L1)
+[interface](https://github.com/picosh/pobj/blob/9e920bd907fca88ad90a300b02254464e3f598fb/storage/storage.go#L1)
 to build your own.
 
 We plan on slowly building more object storage interfaces but this is all we use
@@ -46,9 +46,9 @@ scp -P 2222 -r ./files mybucket@localhost:/
 # docker
 
 ```
-ghcr.io/picosh/objx/objx:latest
+ghcr.io/picosh/pobj/pobj:latest
 ```
 
 We also have a
-[docker compose file](https://github.com/picosh/objx/blob/305f252057d73d69a15b03cdf364596040f3735d/docker-compose.yml#L1)
+[docker compose file](https://github.com/picosh/pobj/blob/305f252057d73d69a15b03cdf364596040f3735d/docker-compose.yml#L1)
 which uses `minio`

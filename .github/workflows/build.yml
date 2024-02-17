@@ -25,4 +25,4 @@ jobs:
       with:
         file: ./Dockerfile
         push: true
-        tags: ghcr.io/picosh/objx/objx:latest
+        tags: ghcr.io/picosh/pobj/pobj:latest

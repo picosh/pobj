@@ -1,4 +1,4 @@
-module github.com/picosh/objx
+module github.com/picosh/pobj
 
 go 1.22.0
 

@@ -1,4 +1,4 @@
-package objx
+package pobj
 
 import (
 	"errors"
