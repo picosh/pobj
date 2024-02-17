@@ -17,7 +17,7 @@ func main() {
 	logger := slog.Default()
 	host := objx.GetEnv("SSH_HOST", "0.0.0.0")
 	port := objx.GetEnv("SSH_PORT", "2222")
-	keyPath := objx.GetEnv("SSH_AUTHORIZED_KEYS", "./ssh_data/authorized_keys")
+	keyPath := objx.GetEnv("SSH_AUTHORIZED_KEYS", "ssh_data/authorized_keys")
 
 	st, err := objx.EnvDriverDetector(logger)
 	if err != nil {
