@@ -14,8 +14,8 @@ We provide an
 [interface](https://github.com/picosh/objx/blob/9e920bd907fca88ad90a300b02254464e3f598fb/storage/storage.go#L1)
 to build your own.
 
-We plan on slowly building more object storage interfaces but this is all what
-we use at [pico.sh](http://pico.sh).
+We plan on slowly building more object storage interfaces but this is all we use
+at [pico.sh](http://pico.sh).
 
 # demo
 
@@ -42,3 +42,13 @@ You are free to change the bucket by providing whatever you want as the user:
 ```bash
 scp -P 2222 -r ./files mybucket@localhost:/
 ```
+
+# docker
+
+```
+ghcr.io/picosh/objx/objx:latest
+```
+
+We also have a
+[docker compose file](https://github.com/picosh/objx/blob/305f252057d73d69a15b03cdf364596040f3735d/docker-compose.yml#L1)
+which uses `minio`
