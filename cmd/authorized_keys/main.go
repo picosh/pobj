@@ -28,7 +28,7 @@ func main() {
 	}
 
 	cfg := &objx.Config{
-		Logger: logger,
+		Logger:  logger,
 		Storage: storage,
 	}
 

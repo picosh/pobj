@@ -7,7 +7,8 @@ type AssetNames interface {
 	FileName(entry *utils.FileEntry) string
 }
 
-type AssetNamesBasic struct {}
+type AssetNamesBasic struct{}
+
 var _ AssetNames = &AssetNamesBasic{}
 var _ AssetNames = (*AssetNamesBasic)(nil)
 

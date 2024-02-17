@@ -16,6 +16,7 @@ import (
 )
 
 type ctxBucketKey struct{}
+
 func getBucket(ctx ssh.Context) (storage.Bucket, error) {
 	bucket := ctx.Value(ctxBucketKey{}).(storage.Bucket)
 	if bucket.Name == "" {
@@ -29,20 +30,21 @@ func setBucket(ctx ssh.Context, bucket storage.Bucket) {
 
 type FileData struct {
 	*utils.FileEntry
-	Text          []byte
-	User          string
-	Bucket        storage.Bucket
+	Text   []byte
+	User   string
+	Bucket storage.Bucket
 }
 
 type Config struct {
-	Logger *slog.Logger
-	Storage storage.ObjectStorage
+	Logger     *slog.Logger
+	Storage    storage.ObjectStorage
 	AssetNames AssetNames
 }
 
 type UploadAssetHandler struct {
-	Cfg     *Config
+	Cfg *Config
 }
+
 var _ utils.CopyFromClientHandler = &UploadAssetHandler{}
 var _ utils.CopyFromClientHandler = (*UploadAssetHandler)(nil)
 
@@ -52,7 +54,7 @@ func NewUploadAssetHandler(cfg *Config) *UploadAssetHandler {
 	}
 
 	return &UploadAssetHandler{
-		Cfg:     cfg,
+		Cfg: cfg,
 	}
 }
 
@@ -161,10 +163,10 @@ func (h *UploadAssetHandler) Write(s ssh.Session, entry *utils.FileEntry) (strin
 	}
 
 	data := &FileData{
-		FileEntry:     entry,
-		User:          userName,
-		Text:          origText,
-		Bucket:        bucket,
+		FileEntry: entry,
+		User:      userName,
+		Text:      origText,
+		Bucket:    bucket,
 	}
 	err = h.writeAsset(data)
 	if err != nil {
@@ -172,7 +174,8 @@ func (h *UploadAssetHandler) Write(s ssh.Session, entry *utils.FileEntry) (strin
 		return "", err
 	}
 
-	url := fmt.Sprintf("")
+	// TODO: make it the object store URL
+	url := fmt.Sprintf("%s%s", bucket.Name, h.Cfg.AssetNames.FileName(entry))
 	return url, nil
 }
 
@@ -187,26 +190,33 @@ func (h *UploadAssetHandler) writeAsset(data *FileData) error {
 	}
 
 	assetFilename := h.Cfg.AssetNames.FileName(data.FileEntry)
-	reader := bytes.NewReader(data.Text)
+	if data.Size == 0 {
+		err = h.Cfg.Storage.DeleteFile(data.Bucket, assetFilename)
+		if err != nil {
+			return err
+		}
+	} else {
+		reader := bytes.NewReader(data.Text)
 
-	h.Cfg.Logger.Info(
-		"uploading file to bucket",
-		"user",
-		data.User,
-		"bucket",
-		data.Bucket.Name,
-		"filename",
-		assetFilename,
-	)
+		h.Cfg.Logger.Info(
+			"uploading file to bucket",
+			"user",
+			data.User,
+			"bucket",
+			data.Bucket.Name,
+			"filename",
+			assetFilename,
+		)
 
-	_, err = h.Cfg.Storage.PutFile(
-		data.Bucket,
-		assetFilename,
-		utils.NopReaderAtCloser(reader),
-		data.FileEntry,
-	)
-	if err != nil {
-		return err
+		_, err = h.Cfg.Storage.PutFile(
+			data.Bucket,
+			assetFilename,
+			utils.NopReaderAtCloser(reader),
+			data.FileEntry,
+		)
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil
