@@ -11,8 +11,8 @@ services:
     ports:
       - 9000:9000
       - 9001:9001
-  objx:
-    image: ghcr.io/picosh/objx/objx
+  pobj:
+    image: ghcr.io/picosh/pobj/pobj
     env_file:
       - .env
     volumes:
