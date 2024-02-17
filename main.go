@@ -25,7 +25,7 @@ func createRouter(handler utils.CopyFromClientHandler) proxy.Router {
 	}
 }
 
-func WithStorageProxy(handler utils.CopyFromClientHandler, otherMiddleware ...wish.Middleware) ssh.Option {
+func WithProxy(handler utils.CopyFromClientHandler, otherMiddleware ...wish.Middleware) ssh.Option {
 	return func(server *ssh.Server) error {
 		err := sftp.SSHOption(handler)(server)
 		if err != nil {

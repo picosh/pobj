@@ -141,7 +141,13 @@ func (h *UploadAssetHandler) Validate(s ssh.Session) error {
 	}
 	setBucket(s.Context(), bucket)
 
-	h.Cfg.Logger.Info("attempting to upload files", "user", userName)
+	pk, _ := utils.KeyText(s)
+	h.Cfg.Logger.Info(
+		"attempting to upload files",
+		"user", userName,
+		"bucket", bucket.Name,
+		"publicKey", pk,
+	)
 	return nil
 }
 

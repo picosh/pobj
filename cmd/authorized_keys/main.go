@@ -11,17 +11,15 @@ import (
 
 	"github.com/charmbracelet/wish"
 	"github.com/picosh/objx"
-	"github.com/picosh/objx/storage"
 )
 
 func main() {
+	logger := slog.Default()
 	host := objx.GetEnv("SSH_HOST", "0.0.0.0")
 	port := objx.GetEnv("SSH_PORT", "2222")
 	keyPath := objx.GetEnv("SSH_AUTHORIZED_KEYS", "./ssh_data/authorized_keys")
-	storageDir := "./.storage"
-	logger := slog.Default()
-	storage, err := storage.NewStorageFS(storageDir)
 
+	st, err := objx.EnvDriverDetector(logger)
 	if err != nil {
 		logger.Error(err.Error())
 		return
@@ -29,7 +27,7 @@ func main() {
 
 	cfg := &objx.Config{
 		Logger:  logger,
-		Storage: storage,
+		Storage: st,
 	}
 
 	handler := objx.NewUploadAssetHandler(cfg)
@@ -38,7 +36,7 @@ func main() {
 		wish.WithAddress(fmt.Sprintf("%s:%s", host, port)),
 		wish.WithHostKeyPath("ssh_data/term_info_ed25519"),
 		wish.WithAuthorizedKeys(keyPath),
-		objx.WithStorageProxy(handler),
+		objx.WithProxy(handler),
 	)
 	if err != nil {
 		logger.Error(err.Error())
@@ -48,7 +46,7 @@ func main() {
 	done := make(chan os.Signal, 1)
 	signal.Notify(done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 	logger.Info(
-		"Starting SSH server",
+		"starting SSH server",
 		"host", host,
 		"port", port,
 	)
@@ -59,9 +57,11 @@ func main() {
 	}()
 
 	<-done
-	logger.Info("Stopping SSH server")
+	logger.Info("stopping SSH server")
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
-	defer func() { cancel() }()
+	defer func() {
+		cancel()
+	}()
 	if err := s.Shutdown(ctx); err != nil {
 		logger.Error(err.Error())
 	}
