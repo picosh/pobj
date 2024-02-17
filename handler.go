@@ -189,9 +189,9 @@ func (h *UploadAssetHandler) writeAsset(data *FileData) error {
 		return err
 	}
 
-	assetFilename := h.Cfg.AssetNames.ObjectName(data.FileEntry)
+	objectFileName := h.Cfg.AssetNames.ObjectName(data.FileEntry)
 	if data.Size == 0 {
-		err = h.Cfg.Storage.DeleteObject(data.Bucket, assetFilename)
+		err = h.Cfg.Storage.DeleteObject(data.Bucket, objectFileName)
 		if err != nil {
 			return err
 		}
@@ -204,13 +204,13 @@ func (h *UploadAssetHandler) writeAsset(data *FileData) error {
 			data.User,
 			"bucket",
 			data.Bucket.Name,
-			"filename",
-			assetFilename,
+			"object",
+			objectFileName,
 		)
 
 		_, err = h.Cfg.Storage.PutObject(
 			data.Bucket,
-			assetFilename,
+			objectFileName,
 			utils.NopReaderAtCloser(reader),
 			data.FileEntry,
 		)
