@@ -20,9 +20,9 @@ func EnvDriverDetector(logger *slog.Logger) (storage.ObjectStorage, error) {
 	logger.Info("driver detected", "driver", driver)
 
 	if driver == "minio" {
-		url := GetEnv("OBJECT_URL", "")
-		user := GetEnv("OBJECT_USER", "")
-		pass := GetEnv("OBJECT_PASS", "")
+		url := GetEnv("MINIO_URL", "")
+		user := GetEnv("MINIO_ROOT_USER", "")
+		pass := GetEnv("MINIO_ROOT_PASSWORD", "")
 		logger.Info(
 			"object config detected",
 			"url", url,
