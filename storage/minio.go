@@ -113,7 +113,7 @@ func (s *StorageMinio) ListBuckets() ([]string, error) {
 	return bcks, nil
 }
 
-func (s *StorageMinio) ListFiles(bucket Bucket, dir string, recursive bool) ([]os.FileInfo, error) {
+func (s *StorageMinio) ListObjects(bucket Bucket, dir string, recursive bool) ([]os.FileInfo, error) {
 	var fileList []os.FileInfo
 
 	resolved := strings.TrimPrefix(dir, "/")
@@ -153,7 +153,7 @@ func (s *StorageMinio) DeleteBucket(bucket Bucket) error {
 	return s.Client.RemoveBucket(context.TODO(), bucket.Name)
 }
 
-func (s *StorageMinio) GetFileSize(bucket Bucket, fpath string) (int64, error) {
+func (s *StorageMinio) GetObjectSize(bucket Bucket, fpath string) (int64, error) {
 	info, err := s.Client.StatObject(context.Background(), bucket.Name, fpath, minio.StatObjectOptions{})
 	if err != nil {
 		return 0, err
@@ -161,7 +161,7 @@ func (s *StorageMinio) GetFileSize(bucket Bucket, fpath string) (int64, error) {
 	return info.Size, nil
 }
 
-func (s *StorageMinio) GetFile(bucket Bucket, fpath string) (utils.ReaderAtCloser, int64, time.Time, error) {
+func (s *StorageMinio) GetObject(bucket Bucket, fpath string) (utils.ReaderAtCloser, int64, time.Time, error) {
 	modTime := time.Time{}
 
 	info, err := s.Client.StatObject(context.Background(), bucket.Name, fpath, minio.StatObjectOptions{})
@@ -184,7 +184,7 @@ func (s *StorageMinio) GetFile(bucket Bucket, fpath string) (utils.ReaderAtClose
 	return obj, info.Size, modTime, nil
 }
 
-func (s *StorageMinio) PutFile(bucket Bucket, fpath string, contents utils.ReaderAtCloser, entry *utils.FileEntry) (string, error) {
+func (s *StorageMinio) PutObject(bucket Bucket, fpath string, contents utils.ReaderAtCloser, entry *utils.FileEntry) (string, error) {
 	opts := minio.PutObjectOptions{}
 
 	if entry.Mtime > 0 {
@@ -202,7 +202,7 @@ func (s *StorageMinio) PutFile(bucket Bucket, fpath string, contents utils.Reade
 	return fmt.Sprintf("%s/%s", info.Bucket, info.Key), nil
 }
 
-func (s *StorageMinio) DeleteFile(bucket Bucket, fpath string) error {
+func (s *StorageMinio) DeleteObject(bucket Bucket, fpath string) error {
 	err := s.Client.RemoveObject(context.TODO(), bucket.Name, fpath, minio.RemoveObjectOptions{})
 	return err
 }

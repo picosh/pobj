@@ -87,7 +87,7 @@ func (s *StorageFS) DeleteBucket(bucket Bucket) error {
 	return os.RemoveAll(bucket.Path)
 }
 
-func (s *StorageFS) GetFileSize(bucket Bucket, fpath string) (int64, error) {
+func (s *StorageFS) GetObjectSize(bucket Bucket, fpath string) (int64, error) {
 	fi, err := os.Stat(filepath.Join(bucket.Path, fpath))
 	if err != nil {
 		return 0, err
@@ -96,7 +96,7 @@ func (s *StorageFS) GetFileSize(bucket Bucket, fpath string) (int64, error) {
 	return size, nil
 }
 
-func (s *StorageFS) GetFile(bucket Bucket, fpath string) (utils.ReaderAtCloser, int64, time.Time, error) {
+func (s *StorageFS) GetObject(bucket Bucket, fpath string) (utils.ReaderAtCloser, int64, time.Time, error) {
 	dat, err := os.Open(filepath.Join(bucket.Path, fpath))
 	if err != nil {
 		return nil, 0, time.Time{}, err
@@ -110,7 +110,7 @@ func (s *StorageFS) GetFile(bucket Bucket, fpath string) (utils.ReaderAtCloser, 
 	return dat, info.Size(), info.ModTime(), nil
 }
 
-func (s *StorageFS) PutFile(bucket Bucket, fpath string, contents utils.ReaderAtCloser, entry *utils.FileEntry) (string, error) {
+func (s *StorageFS) PutObject(bucket Bucket, fpath string, contents utils.ReaderAtCloser, entry *utils.FileEntry) (string, error) {
 	loc := filepath.Join(bucket.Path, fpath)
 	err := os.MkdirAll(filepath.Dir(loc), os.ModePerm)
 	if err != nil {
@@ -136,7 +136,7 @@ func (s *StorageFS) PutFile(bucket Bucket, fpath string, contents utils.ReaderAt
 	return loc, nil
 }
 
-func (s *StorageFS) DeleteFile(bucket Bucket, fpath string) error {
+func (s *StorageFS) DeleteObject(bucket Bucket, fpath string) error {
 	loc := filepath.Join(bucket.Path, fpath)
 	err := os.Remove(loc)
 	if err != nil {
@@ -150,7 +150,7 @@ func (s *StorageFS) ListBuckets() ([]string, error) {
 	return []string{}, fmt.Errorf("not implemented")
 }
 
-func (s *StorageFS) ListFiles(bucket Bucket, dir string, recursive bool) ([]os.FileInfo, error) {
+func (s *StorageFS) ListObjects(bucket Bucket, dir string, recursive bool) ([]os.FileInfo, error) {
 	var fileList []os.FileInfo
 
 	fpath := path.Join(bucket.Path, dir)

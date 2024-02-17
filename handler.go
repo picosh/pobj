@@ -76,8 +76,8 @@ func (h *UploadAssetHandler) Read(s ssh.Session, entry *utils.FileEntry) (os.Fil
 		return nil, nil, err
 	}
 
-	fname := h.Cfg.AssetNames.FileName(entry)
-	contents, size, modTime, err := h.Cfg.Storage.GetFile(bucket, fname)
+	fname := h.Cfg.AssetNames.ObjectName(entry)
+	contents, size, modTime, err := h.Cfg.Storage.GetObject(bucket, fname)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -119,7 +119,7 @@ func (h *UploadAssetHandler) List(s ssh.Session, fpath string, isDir bool, recur
 			cleanFilename += "/"
 		}
 
-		foundList, err := h.Cfg.Storage.ListFiles(bucket, cleanFilename, recursive)
+		foundList, err := h.Cfg.Storage.ListObjects(bucket, cleanFilename, recursive)
 		if err != nil {
 			return fileList, err
 		}
@@ -175,7 +175,7 @@ func (h *UploadAssetHandler) Write(s ssh.Session, entry *utils.FileEntry) (strin
 	}
 
 	// TODO: make it the object store URL
-	url := fmt.Sprintf("%s%s", bucket.Name, h.Cfg.AssetNames.FileName(entry))
+	url := fmt.Sprintf("%s%s", bucket.Name, h.Cfg.AssetNames.ObjectName(entry))
 	return url, nil
 }
 
@@ -189,9 +189,9 @@ func (h *UploadAssetHandler) writeAsset(data *FileData) error {
 		return err
 	}
 
-	assetFilename := h.Cfg.AssetNames.FileName(data.FileEntry)
+	assetFilename := h.Cfg.AssetNames.ObjectName(data.FileEntry)
 	if data.Size == 0 {
-		err = h.Cfg.Storage.DeleteFile(data.Bucket, assetFilename)
+		err = h.Cfg.Storage.DeleteObject(data.Bucket, assetFilename)
 		if err != nil {
 			return err
 		}
@@ -208,7 +208,7 @@ func (h *UploadAssetHandler) writeAsset(data *FileData) error {
 			assetFilename,
 		)
 
-		_, err = h.Cfg.Storage.PutFile(
+		_, err = h.Cfg.Storage.PutObject(
 			data.Bucket,
 			assetFilename,
 			utils.NopReaderAtCloser(reader),
