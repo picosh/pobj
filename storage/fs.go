@@ -87,15 +87,6 @@ func (s *StorageFS) DeleteBucket(bucket Bucket) error {
 	return os.RemoveAll(bucket.Path)
 }
 
-func (s *StorageFS) GetObjectSize(bucket Bucket, fpath string) (int64, error) {
-	fi, err := os.Stat(filepath.Join(bucket.Path, fpath))
-	if err != nil {
-		return 0, err
-	}
-	size := fi.Size()
-	return size, nil
-}
-
 func (s *StorageFS) GetObject(bucket Bucket, fpath string) (utils.ReaderAtCloser, int64, time.Time, error) {
 	dat, err := os.Open(filepath.Join(bucket.Path, fpath))
 	if err != nil {

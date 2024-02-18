@@ -20,7 +20,6 @@ type ObjectStorage interface {
 
 	DeleteBucket(bucket Bucket) error
 	GetBucketQuota(bucket Bucket) (uint64, error)
-	GetObjectSize(bucket Bucket, fpath string) (int64, error)
 	GetObject(bucket Bucket, fpath string) (utils.ReaderAtCloser, int64, time.Time, error)
 	PutObject(bucket Bucket, fpath string, contents utils.ReaderAtCloser, entry *utils.FileEntry) (string, error)
 	DeleteObject(bucket Bucket, fpath string) error
