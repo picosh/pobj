@@ -62,6 +62,18 @@ func (h *UploadAssetHandler) GetLogger() *slog.Logger {
 	return h.Cfg.Logger
 }
 
+func (h *UploadAssetHandler) Delete(s ssh.Session, entry *utils.FileEntry) error {
+	bucket, err := getBucket(s.Context())
+	if err != nil {
+		h.Cfg.Logger.Error(err.Error())
+		return err
+	}
+
+	objectFileName := h.Cfg.AssetNames.ObjectName(entry)
+
+	return h.Cfg.Storage.DeleteObject(bucket, objectFileName)
+}
+
 func (h *UploadAssetHandler) Read(s ssh.Session, entry *utils.FileEntry) (os.FileInfo, utils.ReaderAtCloser, error) {
 	fileInfo := &utils.VirtualFile{
 		FName:    filepath.Base(entry.Filepath),
@@ -196,33 +208,26 @@ func (h *UploadAssetHandler) writeAsset(data *FileData) error {
 	}
 
 	objectFileName := h.Cfg.AssetNames.ObjectName(data.FileEntry)
-	if data.Size == 0 {
-		err = h.Cfg.Storage.DeleteObject(data.Bucket, objectFileName)
-		if err != nil {
-			return err
-		}
-	} else {
-		reader := bytes.NewReader(data.Text)
+	reader := bytes.NewReader(data.Text)
 
-		h.Cfg.Logger.Info(
-			"uploading file to bucket",
-			"user",
-			data.User,
-			"bucket",
-			data.Bucket.Name,
-			"object",
-			objectFileName,
-		)
+	h.Cfg.Logger.Info(
+		"uploading file to bucket",
+		"user",
+		data.User,
+		"bucket",
+		data.Bucket.Name,
+		"object",
+		objectFileName,
+	)
 
-		_, err = h.Cfg.Storage.PutObject(
-			data.Bucket,
-			objectFileName,
-			utils.NopReaderAtCloser(reader),
-			data.FileEntry,
-		)
-		if err != nil {
-			return err
-		}
+	_, err = h.Cfg.Storage.PutObject(
+		data.Bucket,
+		objectFileName,
+		utils.NopReaderAtCloser(reader),
+		data.FileEntry,
+	)
+	if err != nil {
+		return err
 	}
 
 	return nil

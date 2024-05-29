@@ -118,17 +118,15 @@ func (s *StorageMinio) ListObjects(bucket Bucket, dir string, recursive bool) ([
 
 	resolved := strings.TrimPrefix(dir, "/")
 
-	opts := minio.ListObjectsOptions{Prefix: resolved, Recursive: recursive}
+	opts := minio.ListObjectsOptions{Prefix: resolved, Recursive: recursive, WithMetadata: true}
 	for obj := range s.Client.ListObjects(context.Background(), bucket.Name, opts) {
 		if obj.Err != nil {
 			return fileList, obj.Err
 		}
-		isDir := false
-		if obj.Size == 0 {
-			isDir = true
-		}
 
-		modTime := time.Time{}
+		isDir := strings.HasSuffix(obj.Key, string(os.PathSeparator))
+
+		modTime := obj.LastModified
 
 		if mtime, ok := obj.UserMetadata["Mtime"]; ok {
 			mtimeUnix, err := strconv.Atoi(mtime)
@@ -161,6 +159,8 @@ func (s *StorageMinio) GetObject(bucket Bucket, fpath string) (utils.ReaderAtClo
 		return nil, 0, modTime, err
 	}
 
+	modTime = info.LastModified
+
 	obj, err := s.Client.GetObject(context.Background(), bucket.Name, fpath, minio.GetObjectOptions{})
 	if err != nil {
 		return nil, 0, modTime, err
@@ -177,12 +177,14 @@ func (s *StorageMinio) GetObject(bucket Bucket, fpath string) (utils.ReaderAtClo
 }
 
 func (s *StorageMinio) PutObject(bucket Bucket, fpath string, contents utils.ReaderAtCloser, entry *utils.FileEntry) (string, error) {
-	opts := minio.PutObjectOptions{}
+	opts := minio.PutObjectOptions{
+		UserMetadata: map[string]string{
+			"Mtime": fmt.Sprint(time.Now().Unix()),
+		},
+	}
 
 	if entry.Mtime > 0 {
-		opts.UserMetadata = map[string]string{
-			"Mtime": fmt.Sprint(entry.Mtime),
-		}
+		opts.UserMetadata["Mtime"] = fmt.Sprint(entry.Mtime)
 	}
 
 	info, err := s.Client.PutObject(context.TODO(), bucket.Name, fpath, contents, -1, opts)
