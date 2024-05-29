@@ -1,6 +1,6 @@
 module github.com/picosh/pobj
 
-go 1.21.9
+go 1.22
 
 require (
 	github.com/charmbracelet/ssh v0.0.0-20230822194956-1a051f898e09
