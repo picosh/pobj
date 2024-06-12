@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"io"
 	"os"
 	"time"
 
@@ -21,7 +22,7 @@ type ObjectStorage interface {
 	DeleteBucket(bucket Bucket) error
 
 	GetObject(bucket Bucket, fpath string) (utils.ReaderAtCloser, int64, time.Time, error)
-	PutObject(bucket Bucket, fpath string, contents utils.ReaderAtCloser, entry *utils.FileEntry) (string, error)
+	PutObject(bucket Bucket, fpath string, contents io.Reader, entry *utils.FileEntry) (string, error)
 	DeleteObject(bucket Bucket, fpath string) error
 	ListObjects(bucket Bucket, dir string, recursive bool) ([]os.FileInfo, error)
 }

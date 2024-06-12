@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io"
 	"net/url"
 	"os"
 	"strconv"
@@ -176,7 +177,7 @@ func (s *StorageMinio) GetObject(bucket Bucket, fpath string) (utils.ReaderAtClo
 	return obj, info.Size, modTime, nil
 }
 
-func (s *StorageMinio) PutObject(bucket Bucket, fpath string, contents utils.ReaderAtCloser, entry *utils.FileEntry) (string, error) {
+func (s *StorageMinio) PutObject(bucket Bucket, fpath string, contents io.Reader, entry *utils.FileEntry) (string, error) {
 	opts := minio.PutObjectOptions{
 		UserMetadata: map[string]string{
 			"Mtime": fmt.Sprint(time.Now().Unix()),

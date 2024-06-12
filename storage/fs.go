@@ -101,7 +101,7 @@ func (s *StorageFS) GetObject(bucket Bucket, fpath string) (utils.ReaderAtCloser
 	return dat, info.Size(), info.ModTime(), nil
 }
 
-func (s *StorageFS) PutObject(bucket Bucket, fpath string, contents utils.ReaderAtCloser, entry *utils.FileEntry) (string, error) {
+func (s *StorageFS) PutObject(bucket Bucket, fpath string, contents io.Reader, entry *utils.FileEntry) (string, error) {
 	loc := filepath.Join(bucket.Path, fpath)
 	err := os.MkdirAll(filepath.Dir(loc), os.ModePerm)
 	if err != nil {
