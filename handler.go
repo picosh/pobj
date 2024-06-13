@@ -220,7 +220,7 @@ func (h *UploadAssetHandler) writeAsset(data *FileData) error {
 		objectFileName,
 	)
 
-	_, err = h.Cfg.Storage.PutObject(
+	_, _, err = h.Cfg.Storage.PutObject(
 		data.Bucket,
 		objectFileName,
 		utils.NopReaderAtCloser(reader),
