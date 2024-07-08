@@ -188,7 +188,11 @@ func (s *StorageMinio) PutObject(bucket Bucket, fpath string, contents io.Reader
 		opts.UserMetadata["Mtime"] = fmt.Sprint(entry.Mtime)
 	}
 
-	info, err := s.Client.PutObject(context.TODO(), bucket.Name, fpath, contents, -1, opts)
+	var objSize int64 = -1
+	if entry.Size > 0 {
+		objSize = entry.Size
+	}
+	info, err := s.Client.PutObject(context.TODO(), bucket.Name, fpath, contents, objSize, opts)
 
 	if err != nil {
 		return "", 0, err
