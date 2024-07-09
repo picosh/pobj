@@ -7,13 +7,12 @@ require (
 	github.com/charmbracelet/wish v1.2.0
 	github.com/minio/madmin-go/v3 v3.0.29
 	github.com/minio/minio-go/v7 v7.0.63
-	github.com/picosh/send v0.0.0-20240217010313-c282075fbdf8
+	github.com/picosh/send v0.0.0-20240709135413-81b1dd703a11
 )
 
 require (
 	github.com/DavidGamba/go-getoptions v0.29.0 // indirect
 	github.com/anmitsu/go-shlex v0.0.0-20200514113438-38f4b401e2be // indirect
-	github.com/antoniomika/go-rsync-receiver v0.0.0-20231110145728-c94949e1ab7d // indirect
 	github.com/aymanbagabas/go-osc52/v2 v2.0.1 // indirect
 	github.com/charmbracelet/keygen v0.5.0 // indirect
 	github.com/charmbracelet/lipgloss v0.9.1 // indirect
@@ -43,6 +42,7 @@ require (
 	github.com/muesli/reflow v0.3.0 // indirect
 	github.com/muesli/termenv v0.15.2 // indirect
 	github.com/philhofer/fwd v1.1.2 // indirect
+	github.com/picosh/go-rsync-receiver v0.0.0-20240709135253-1daf4b12a9fc // indirect
 	github.com/pkg/sftp v1.13.6 // indirect
 	github.com/power-devops/perfstat v0.0.0-20221212215047-62379fc7944b // indirect
 	github.com/prometheus/client_model v0.5.0 // indirect
