@@ -17,7 +17,7 @@ func main() {
 	logger := slog.Default()
 	host := pobj.GetEnv("SSH_HOST", "0.0.0.0")
 	port := pobj.GetEnv("SSH_PORT", "2222")
-	keyPath := pobj.GetEnv("SSH_AUTHORIZED_KEYS", "ssh_data/authorized_keys")
+	keyPath := pobj.GetEnv("SSH_AUTHORIZED_KEYS", "./ssh_data/authorized_keys")
 
 	st, err := pobj.EnvDriverDetector(logger)
 	if err != nil {

@@ -136,12 +136,24 @@ func (s *StorageS3) ListObjects(bucket Bucket, dir string, recursive bool) ([]os
 			return fileList, err
 		}
 
-		for _, obj := range page.Contents {
-			isDir := strings.HasSuffix(*obj.Key, string(os.PathSeparator))
-			modTime := obj.LastModified
+		for _, pref := range page.CommonPrefixes {
+			modTime := time.Time{}
+			fname := strings.TrimSuffix(strings.TrimPrefix(*pref.Prefix, prefix), "/")
 			info := &utils.VirtualFile{
-				FName:    strings.TrimSuffix(strings.TrimPrefix(*obj.Key, prefix), "/"),
-				FIsDir:   isDir,
+				FName:    fname,
+				FIsDir:   true,
+				FSize:    0,
+				FModTime: modTime,
+			}
+			fileList = append(fileList, info)
+		}
+
+		for _, obj := range page.Contents {
+			modTime := obj.LastModified
+			fname := strings.TrimSuffix(strings.TrimPrefix(*obj.Key, prefix), "/")
+			info := &utils.VirtualFile{
+				FName:    fname,
+				FIsDir:   false,
 				FSize:    *obj.Size,
 				FModTime: *modTime,
 			}
@@ -223,10 +235,11 @@ func (s *StorageS3) GetObject(bucket Bucket, fpath string) (utils.ReaderAtCloser
 }
 
 func (s *StorageS3) PutObject(bucket Bucket, fpath string, contents io.Reader, entry *utils.FileEntry) (string, int64, error) {
+	key := strings.TrimPrefix(fpath, "/")
 	uploader := manager.NewUploader(s.Client)
 	info, err := uploader.Upload(context.TODO(), &s3.PutObjectInput{
 		Bucket: aws.String(bucket.Name),
-		Key:    aws.String(fpath),
+		Key:    aws.String(key),
 		Body:   contents,
 	})
 	if err != nil {
