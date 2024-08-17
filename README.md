@@ -1,7 +1,9 @@
 # pobj
 
-`rsync`, `scp`, `sftp` for your object store. No extra front-end CLI tools
+`rsync`, `scp`, `sftp`, and `sshfs` for your object store. No extra front-end CLI tools
 necessary, use what you already have installed.
+
+All you need to get started is our golang binary and an object store.
 
 # supported object stores
 
@@ -19,16 +21,16 @@ at [pico.sh](http://pico.sh).
 # demo
 
 ```bash
-make build
-./build/authorized_keys
+go run ./cmd/authorized_keys
 ```
 
 Separate terminal:
 
 ```bash
-rsync -e "ssh -p 2222" -r ./files localhost:/
+rsync -e "ssh -p 2222" -rv ./files localhost:/
 scp -P 2222 -r ./files localhost:/
 sftp -P 2222 localhost
+sshfs -p 2222 localhost:/ ./objs
 ```
 
 # info
@@ -49,3 +51,7 @@ ghcr.io/picosh/pobj/pobj:latest
 ```
 
 We also have a [docker compose file](./docker-compose.yml) which uses `minio`.
+
+# inspiration
+
+- [rclone](https://github.com/rclone/rclone)
