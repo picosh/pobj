@@ -7,6 +7,7 @@ import (
 	"github.com/picosh/send/list"
 	"github.com/picosh/send/pipe"
 	"github.com/picosh/send/proxy"
+	"github.com/picosh/send/send/auth"
 	wishrsync "github.com/picosh/send/send/rsync"
 	"github.com/picosh/send/send/scp"
 	"github.com/picosh/send/send/sftp"
@@ -20,6 +21,7 @@ func createRouter(handler utils.CopyFromClientHandler) proxy.Router {
 			list.Middleware(handler),
 			scp.Middleware(handler),
 			wishrsync.Middleware(handler),
+			auth.Middleware(handler),
 			lm.Middleware(),
 		}
 	}

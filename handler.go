@@ -18,7 +18,10 @@ import (
 type ctxBucketKey struct{}
 
 func getBucket(ctx ssh.Context) (storage.Bucket, error) {
-	bucket := ctx.Value(ctxBucketKey{}).(storage.Bucket)
+	bucket, ok := ctx.Value(ctxBucketKey{}).(storage.Bucket)
+	if !ok {
+		return bucket, fmt.Errorf("bucket not set on `ssh.Context()` for connection")
+	}
 	if bucket.Name == "" {
 		return bucket, fmt.Errorf("bucket not set on `ssh.Context()` for connection")
 	}
@@ -70,7 +73,6 @@ func (h *UploadAssetHandler) Delete(s ssh.Session, entry *utils.FileEntry) error
 	}
 
 	objectFileName := h.Cfg.AssetNames.ObjectName(entry)
-
 	return h.Cfg.Storage.DeleteObject(bucket, objectFileName)
 }
 

@@ -250,9 +250,10 @@ func (s *StorageS3) PutObject(bucket Bucket, fpath string, contents io.Reader, e
 }
 
 func (s *StorageS3) DeleteObject(bucket Bucket, fpath string) error {
+	key := strings.TrimPrefix(fpath, "/")
 	_, err := s.Client.DeleteObject(context.TODO(), &s3.DeleteObjectInput{
 		Bucket: aws.String(bucket.Name),
-		Key:    aws.String(fpath),
+		Key:    aws.String(key),
 	})
 	return err
 }
