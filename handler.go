@@ -66,6 +66,7 @@ func (h *UploadAssetHandler) GetLogger() *slog.Logger {
 }
 
 func (h *UploadAssetHandler) Delete(s ssh.Session, entry *utils.FileEntry) error {
+	h.Cfg.Logger.Info("deleting file", "file", entry.Filepath)
 	bucket, err := getBucket(s.Context())
 	if err != nil {
 		h.Cfg.Logger.Error(err.Error())
@@ -83,6 +84,7 @@ func (h *UploadAssetHandler) Read(s ssh.Session, entry *utils.FileEntry) (os.Fil
 		FSize:    entry.Size,
 		FModTime: time.Unix(entry.Mtime, 0),
 	}
+	h.Cfg.Logger.Info("reading file", "file", fileInfo)
 
 	bucketName := h.Cfg.AssetNames.BucketName(s.User())
 	bucket, err := h.Cfg.Storage.GetBucket(bucketName)
@@ -105,6 +107,12 @@ func (h *UploadAssetHandler) Read(s ssh.Session, entry *utils.FileEntry) (os.Fil
 }
 
 func (h *UploadAssetHandler) List(s ssh.Session, fpath string, isDir bool, recursive bool) ([]os.FileInfo, error) {
+	h.Cfg.Logger.Info(
+		"listing path",
+		"dir", fpath,
+		"isDir", isDir,
+		"recursive", recursive,
+	)
 	var fileList []os.FileInfo
 	userName := s.User()
 
