@@ -3,7 +3,7 @@
 `rsync`, `scp`, `sftp`, and `sshfs` for your object store. No extra front-end CLI tools
 necessary, use what you already have installed.
 
-All you need to get started is our golang binary and an object store.
+All you need to get started is our stateless golang binary and an object store.
 
 # supported object stores
 
