@@ -18,3 +18,12 @@ func (an *AssetNamesBasic) BucketName(user string) string {
 func (an *AssetNamesBasic) ObjectName(entry *utils.FileEntry) string {
 	return entry.Filepath
 }
+
+type AssetNamesForceBucket struct {
+	*AssetNamesBasic
+	Name string
+}
+
+func (an *AssetNamesForceBucket) BucketName(user string) string {
+	return an.Name
+}

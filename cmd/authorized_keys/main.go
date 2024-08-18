@@ -18,6 +18,7 @@ func main() {
 	host := pobj.GetEnv("SSH_HOST", "0.0.0.0")
 	port := pobj.GetEnv("SSH_PORT", "2222")
 	keyPath := pobj.GetEnv("SSH_AUTHORIZED_KEYS", "./ssh_data/authorized_keys")
+	bucketName := pobj.GetEnv("OBJECT_BUCKET_NAME", "")
 
 	st, err := pobj.EnvDriverDetector(logger)
 	if err != nil {
@@ -28,6 +29,11 @@ func main() {
 	cfg := &pobj.Config{
 		Logger:  logger,
 		Storage: st,
+	}
+	if bucketName != "" {
+		cfg.AssetNames = &pobj.AssetNamesForceBucket{
+			Name: bucketName,
+		}
 	}
 
 	handler := pobj.NewUploadAssetHandler(cfg)
