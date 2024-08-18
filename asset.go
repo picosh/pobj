@@ -1,10 +1,13 @@
 package pobj
 
-import "github.com/picosh/send/send/utils"
+import (
+	"github.com/charmbracelet/ssh"
+	"github.com/picosh/send/send/utils"
+)
 
 type AssetNames interface {
-	BucketName(user string) string
-	ObjectName(entry *utils.FileEntry) string
+	BucketName(sesh ssh.Session) (string, error)
+	ObjectName(sesh ssh.Session, entry *utils.FileEntry) (string, error)
 }
 
 type AssetNamesBasic struct{}
@@ -12,11 +15,11 @@ type AssetNamesBasic struct{}
 var _ AssetNames = &AssetNamesBasic{}
 var _ AssetNames = (*AssetNamesBasic)(nil)
 
-func (an *AssetNamesBasic) BucketName(user string) string {
-	return user
+func (an *AssetNamesBasic) BucketName(sesh ssh.Session) (string, error) {
+	return sesh.User(), nil
 }
-func (an *AssetNamesBasic) ObjectName(entry *utils.FileEntry) string {
-	return entry.Filepath
+func (an *AssetNamesBasic) ObjectName(sesh ssh.Session, entry *utils.FileEntry) (string, error) {
+	return entry.Filepath, nil
 }
 
 type AssetNamesForceBucket struct {
@@ -24,6 +27,9 @@ type AssetNamesForceBucket struct {
 	Name string
 }
 
-func (an *AssetNamesForceBucket) BucketName(user string) string {
-	return an.Name
+var _ AssetNames = &AssetNamesForceBucket{}
+var _ AssetNames = (*AssetNamesForceBucket)(nil)
+
+func (an *AssetNamesForceBucket) BucketName(sesh ssh.Session) (string, error) {
+	return an.Name, nil
 }
