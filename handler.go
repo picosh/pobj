@@ -135,8 +135,13 @@ func (h *UploadAssetHandler) List(s ssh.Session, fpath string, isDir bool, recur
 		return fileList, err
 	}
 
-	if cleanFilename == "" || cleanFilename == "." {
-		name := cleanFilename
+	fname, err := h.Cfg.AssetNames.ObjectName(s, &utils.FileEntry{Filepath: cleanFilename})
+	if err != nil {
+		return fileList, err
+	}
+
+	if fname == "" || fname == "." {
+		name := fname
 		if name == "" {
 			name = "/"
 		}
@@ -148,11 +153,12 @@ func (h *UploadAssetHandler) List(s ssh.Session, fpath string, isDir bool, recur
 
 		fileList = append(fileList, info)
 	} else {
-		if cleanFilename != "/" && isDir {
-			cleanFilename += "/"
+		name := fname
+		if name != "/" && isDir {
+			name += "/"
 		}
 
-		foundList, err := h.Cfg.Storage.ListObjects(bucket, cleanFilename, recursive)
+		foundList, err := h.Cfg.Storage.ListObjects(bucket, name, recursive)
 		if err != nil {
 			return fileList, err
 		}
@@ -216,12 +222,10 @@ func (h *UploadAssetHandler) Write(s ssh.Session, entry *utils.FileEntry) (strin
 		return "", err
 	}
 
-	fpath, err := h.Cfg.AssetNames.ObjectName(s, entry)
+	url, err := h.Cfg.AssetNames.PrintObjectName(s, entry, bucket.Name)
 	if err != nil {
 		return "", err
 	}
-	// TODO: make it the object store URL
-	url := fmt.Sprintf("%s%s", bucket.Name, fpath)
 	return url, nil
 }
 

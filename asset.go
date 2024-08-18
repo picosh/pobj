@@ -1,6 +1,8 @@
 package pobj
 
 import (
+	"fmt"
+
 	"github.com/charmbracelet/ssh"
 	"github.com/picosh/send/send/utils"
 )
@@ -8,6 +10,7 @@ import (
 type AssetNames interface {
 	BucketName(sesh ssh.Session) (string, error)
 	ObjectName(sesh ssh.Session, entry *utils.FileEntry) (string, error)
+	PrintObjectName(sesh ssh.Session, entry *utils.FileEntry, bucketName string) (string, error)
 }
 
 type AssetNamesBasic struct{}
@@ -20,6 +23,13 @@ func (an *AssetNamesBasic) BucketName(sesh ssh.Session) (string, error) {
 }
 func (an *AssetNamesBasic) ObjectName(sesh ssh.Session, entry *utils.FileEntry) (string, error) {
 	return entry.Filepath, nil
+}
+func (an *AssetNamesBasic) PrintObjectName(sesh ssh.Session, entry *utils.FileEntry, bucketName string) (string, error) {
+	objectName, err := an.ObjectName(sesh, entry)
+	if err != nil {
+		return "", err
+	}
+	return fmt.Sprintf("%s%s", bucketName, objectName), nil
 }
 
 type AssetNamesForceBucket struct {
