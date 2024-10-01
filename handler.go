@@ -8,6 +8,7 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/charmbracelet/ssh"
@@ -89,19 +90,33 @@ func (h *UploadAssetHandler) Read(s ssh.Session, entry *utils.FileEntry) (os.Fil
 	}
 	h.Cfg.Logger.Info("reading file", "file", fileInfo)
 
-	bucketName, err := h.Cfg.AssetNames.BucketName(s)
+	bucketName, err := h.Cfg.AssetNames.BucketName(s, fileInfo.Name())
 	if err != nil {
 		return nil, nil, err
 	}
+
+	if bucketName == "root" && fileInfo.Name() != "/" {
+		parts := strings.Split(fileInfo.Name(), "/")
+		if len(parts) == 1 {
+			bucketName = parts[0]
+		} else {
+			bucketName = parts[1]
+		}
+		fileInfo.FName = strings.Replace(fileInfo.Name(), "/"+bucketName, "", 1)
+	}
+
 	bucket, err := h.Cfg.Storage.GetBucket(bucketName)
 	if err != nil {
 		return nil, nil, err
 	}
 
+	entry.Filepath = fileInfo.Name()
+	fmt.Println(entry)
 	fname, err := h.Cfg.AssetNames.ObjectName(s, entry)
 	if err != nil {
 		return nil, nil, err
 	}
+	fmt.Println(bucket, fname)
 	contents, size, modTime, err := h.Cfg.Storage.GetObject(bucket, fname)
 	if err != nil {
 		return nil, nil, err
@@ -126,10 +141,46 @@ func (h *UploadAssetHandler) List(s ssh.Session, fpath string, isDir bool, recur
 
 	cleanFilename := fpath
 
-	bucketName, err := h.Cfg.AssetNames.BucketName(s)
+	bucketName, err := h.Cfg.AssetNames.BucketName(s, cleanFilename)
 	if err != nil {
 		return fileList, err
 	}
+	h.Cfg.Logger.Info("fff", "name", bucketName)
+
+	// root is a reserved bucket name so we can mount the entire object store
+	if bucketName == "root" {
+		if cleanFilename == "/" {
+			buckets, err := h.Cfg.Storage.ListBuckets()
+			if err != nil {
+				return fileList, err
+			}
+			for _, bucket := range buckets {
+				fileList = append(fileList, &utils.VirtualFile{
+					FName:  bucket,
+					FIsDir: true,
+				})
+			}
+			return fileList, nil
+		} else {
+			parts := strings.Split(cleanFilename, "/")
+			bucketName = parts[1]
+			cleanFilename = strings.Replace(cleanFilename, "/"+bucketName, "", 1)
+			if cleanFilename == "" && !isDir {
+				info := &utils.VirtualFile{
+					FName:  bucketName,
+					FIsDir: true,
+				}
+
+				fileList = append(fileList, info)
+				return fileList, nil
+			}
+
+			if cleanFilename == "" {
+				cleanFilename = "/"
+			}
+		}
+	}
+
 	bucket, err := h.Cfg.Storage.GetBucket(bucketName)
 	if err != nil {
 		return fileList, err
@@ -173,18 +224,21 @@ func (h *UploadAssetHandler) Validate(s ssh.Session) error {
 	var err error
 	userName := s.User()
 
-	assetBucket, err := h.Cfg.AssetNames.BucketName(s)
+	assetBucket, err := h.Cfg.AssetNames.BucketName(s, "")
 	if err != nil {
+		h.Cfg.Logger.Error("bucket name", "err", err)
 		return err
 	}
+	logger := h.Cfg.Logger.With("assetBucket", assetBucket)
 	bucket, err := h.Cfg.Storage.UpsertBucket(assetBucket)
 	if err != nil {
+		logger.Error("upsert bucket", "err", err)
 		return err
 	}
 	setBucket(s.Context(), bucket)
 
 	pk, _ := utils.KeyText(s)
-	h.Cfg.Logger.Info(
+	logger.Info(
 		"attempting to upload files",
 		"user", userName,
 		"bucket", bucket.Name,
