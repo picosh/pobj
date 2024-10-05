@@ -165,8 +165,10 @@ func (s *StorageMinio) GetObject(bucket Bucket, fpath string) (utils.ReaderAtClo
 	}
 
 	objInfo.LastModified = info.LastModified
+	objInfo.ETag = info.ETag
 	objInfo.Metadata = info.Metadata
 	objInfo.UserMetadata = info.UserMetadata
+	objInfo.Size = info.Size
 
 	obj, err := s.Client.GetObject(context.Background(), bucket.Name, fpath, minio.GetObjectOptions{})
 	if err != nil {
@@ -179,8 +181,6 @@ func (s *StorageMinio) GetObject(bucket Bucket, fpath string) (utils.ReaderAtClo
 			objInfo.LastModified = time.Unix(int64(mtimeUnix), 0)
 		}
 	}
-
-	objInfo.Size = info.Size
 
 	return obj, objInfo, nil
 }
