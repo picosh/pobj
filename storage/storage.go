@@ -2,6 +2,7 @@ package storage
 
 import (
 	"io"
+	"net/http"
 	"os"
 	"time"
 
@@ -21,8 +22,16 @@ type ObjectStorage interface {
 	ListBuckets() ([]string, error)
 	DeleteBucket(bucket Bucket) error
 
-	GetObject(bucket Bucket, fpath string) (utils.ReaderAtCloser, int64, time.Time, error)
+	GetObject(bucket Bucket, fpath string) (utils.ReaderAtCloser, *ObjectInfo, error)
 	PutObject(bucket Bucket, fpath string, contents io.Reader, entry *utils.FileEntry) (string, int64, error)
 	DeleteObject(bucket Bucket, fpath string) error
 	ListObjects(bucket Bucket, dir string, recursive bool) ([]os.FileInfo, error)
+}
+
+type ObjectInfo struct {
+	Size         int64
+	LastModified time.Time
+	ETag         string
+	Metadata     http.Header
+	UserMetadata map[string]string
 }

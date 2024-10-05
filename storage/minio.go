@@ -152,29 +152,37 @@ func (s *StorageMinio) DeleteBucket(bucket Bucket) error {
 	return s.Client.RemoveBucket(context.TODO(), bucket.Name)
 }
 
-func (s *StorageMinio) GetObject(bucket Bucket, fpath string) (utils.ReaderAtCloser, int64, time.Time, error) {
-	modTime := time.Time{}
+func (s *StorageMinio) GetObject(bucket Bucket, fpath string) (utils.ReaderAtCloser, *ObjectInfo, error) {
+	objInfo := &ObjectInfo{
+		Size:         0,
+		LastModified: time.Time{},
+		ETag:         "",
+	}
 
 	info, err := s.Client.StatObject(context.Background(), bucket.Name, fpath, minio.StatObjectOptions{})
 	if err != nil {
-		return nil, 0, modTime, err
+		return nil, objInfo, err
 	}
 
-	modTime = info.LastModified
+	objInfo.LastModified = info.LastModified
+	objInfo.Metadata = info.Metadata
+	objInfo.UserMetadata = info.UserMetadata
 
 	obj, err := s.Client.GetObject(context.Background(), bucket.Name, fpath, minio.GetObjectOptions{})
 	if err != nil {
-		return nil, 0, modTime, err
+		return nil, objInfo, err
 	}
 
 	if mtime, ok := info.UserMetadata["Mtime"]; ok {
 		mtimeUnix, err := strconv.Atoi(mtime)
 		if err == nil {
-			modTime = time.Unix(int64(mtimeUnix), 0)
+			objInfo.LastModified = time.Unix(int64(mtimeUnix), 0)
 		}
 	}
 
-	return obj, info.Size, modTime, nil
+	objInfo.Size = info.Size
+
+	return obj, objInfo, nil
 }
 
 func (s *StorageMinio) PutObject(bucket Bucket, fpath string, contents io.Reader, entry *utils.FileEntry) (string, int64, error) {

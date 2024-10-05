@@ -102,13 +102,13 @@ func (h *UploadAssetHandler) Read(s ssh.Session, entry *utils.FileEntry) (os.Fil
 	if err != nil {
 		return nil, nil, err
 	}
-	contents, size, modTime, err := h.Cfg.Storage.GetObject(bucket, fname)
+	contents, info, err := h.Cfg.Storage.GetObject(bucket, fname)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	fileInfo.FSize = size
-	fileInfo.FModTime = modTime
+	fileInfo.FSize = info.Size
+	fileInfo.FModTime = info.LastModified
 
 	reader := NewAllReaderAt(contents)
 

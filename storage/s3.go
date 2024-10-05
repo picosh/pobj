@@ -207,23 +207,33 @@ func (s *StorageS3) DeleteBucket(bucket Bucket) error {
 	return err
 }
 
-func (s *StorageS3) GetObject(bucket Bucket, fpath string) (utils.ReaderAtCloser, int64, time.Time, error) {
-	modTime := time.Time{}
+func (s *StorageS3) GetObject(bucket Bucket, fpath string) (utils.ReaderAtCloser, *ObjectInfo, error) {
 	input := &s3.GetObjectInput{
 		Bucket: aws.String(bucket.Name),
 		Key:    aws.String(fpath),
 	}
 
+	objInfo := &ObjectInfo{
+		LastModified: time.Time{},
+		Metadata:     nil,
+		UserMetadata: map[string]string{},
+	}
+
 	result, err := s.Client.GetObject(context.TODO(), input)
 	if err != nil {
-		return nil, 0, modTime, err
+		return nil, objInfo, err
 	}
+
+	objInfo.UserMetadata = result.Metadata
+	objInfo.ETag = *result.ETag
+	objInfo.Size = *result.ContentLength
+	objInfo.LastModified = *result.LastModified
 
 	// unfortunately we have to read the object into memory because we
 	// require io.ReadAt
 	data, err := io.ReadAll(result.Body)
 	if err != nil {
-		return nil, *result.ContentLength, modTime, err
+		return nil, objInfo, err
 	}
 	defer result.Body.Close()
 
@@ -231,7 +241,7 @@ func (s *StorageS3) GetObject(bucket Bucket, fpath string) (utils.ReaderAtCloser
 	body := bytes.NewReader(data)
 	content := utils.NopReaderAtCloser(body)
 
-	return content, *result.ContentLength, *result.LastModified, nil
+	return content, objInfo, nil
 }
 
 func (s *StorageS3) PutObject(bucket Bucket, fpath string, contents io.Reader, entry *utils.FileEntry) (string, int64, error) {

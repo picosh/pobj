@@ -87,18 +87,26 @@ func (s *StorageFS) DeleteBucket(bucket Bucket) error {
 	return os.RemoveAll(bucket.Path)
 }
 
-func (s *StorageFS) GetObject(bucket Bucket, fpath string) (utils.ReaderAtCloser, int64, time.Time, error) {
+func (s *StorageFS) GetObject(bucket Bucket, fpath string) (utils.ReaderAtCloser, *ObjectInfo, error) {
+	objInfo := &ObjectInfo{
+		LastModified: time.Time{},
+		Metadata:     nil,
+		UserMetadata: map[string]string{},
+	}
+
 	dat, err := os.Open(filepath.Join(bucket.Path, fpath))
 	if err != nil {
-		return nil, 0, time.Time{}, err
+		return nil, objInfo, err
 	}
 
 	info, err := dat.Stat()
 	if err != nil {
-		return nil, 0, time.Time{}, err
+		return nil, objInfo, err
 	}
 
-	return dat, info.Size(), info.ModTime(), nil
+	objInfo.Size = info.Size()
+	objInfo.LastModified = info.ModTime()
+	return dat, objInfo, nil
 }
 
 func (s *StorageFS) PutObject(bucket Bucket, fpath string, contents io.Reader, entry *utils.FileEntry) (string, int64, error) {
