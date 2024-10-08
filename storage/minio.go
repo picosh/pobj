@@ -14,7 +14,7 @@ import (
 	"github.com/minio/madmin-go/v3"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
-	"github.com/picosh/send/send/utils"
+	"github.com/picosh/send/utils"
 )
 
 type StorageMinio struct {

@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"github.com/minio/minio-go/v7"
-	"github.com/picosh/send/send/utils"
+	"github.com/picosh/send/utils"
 )
 
 type AllReaderAt struct {

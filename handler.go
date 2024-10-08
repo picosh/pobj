@@ -12,7 +12,7 @@ import (
 
 	"github.com/charmbracelet/ssh"
 	"github.com/picosh/pobj/storage"
-	"github.com/picosh/send/send/utils"
+	"github.com/picosh/send/utils"
 )
 
 type ctxBucketKey struct{}

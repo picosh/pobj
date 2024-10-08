@@ -4,14 +4,14 @@ import (
 	"github.com/charmbracelet/ssh"
 	"github.com/charmbracelet/wish"
 	lm "github.com/charmbracelet/wish/logging"
+	"github.com/picosh/send/auth"
 	"github.com/picosh/send/list"
 	"github.com/picosh/send/pipe"
+	wishrsync "github.com/picosh/send/protocols/rsync"
+	"github.com/picosh/send/protocols/scp"
+	"github.com/picosh/send/protocols/sftp"
 	"github.com/picosh/send/proxy"
-	"github.com/picosh/send/send/auth"
-	wishrsync "github.com/picosh/send/send/rsync"
-	"github.com/picosh/send/send/scp"
-	"github.com/picosh/send/send/sftp"
-	"github.com/picosh/send/send/utils"
+	"github.com/picosh/send/utils"
 )
 
 func createRouter(handler utils.CopyFromClientHandler) proxy.Router {
