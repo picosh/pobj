@@ -12,6 +12,7 @@ Currently support object stores:
 - [filesystem](./storage/fs.go)
 - [minio](./storage/minio.go)
 - [s3](./storage/s3.go)
+- [memory](./storage/memory.go)
 
 We provide an [interface](./storage/storage.go) to build your own.
 
