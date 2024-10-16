@@ -19,7 +19,7 @@ func EnvDriverDetector(logger *slog.Logger) (storage.ObjectStorage, error) {
 	logger.Info("driver detected", "driver", driver)
 
 	if driver == "memory" {
-		return storage.NewStorageMemory()
+		return storage.NewStorageMemory(map[string]map[string]string{})
 	} else if driver == "minio" {
 		url := GetEnv("MINIO_URL", "")
 		user := GetEnv("MINIO_ROOT_USER", "")

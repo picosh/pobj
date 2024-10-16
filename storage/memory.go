@@ -18,9 +18,9 @@ type StorageMemory struct {
 var _ ObjectStorage = &StorageMemory{}
 var _ ObjectStorage = (*StorageMemory)(nil)
 
-func NewStorageMemory() (*StorageMemory, error) {
+func NewStorageMemory(st map[string]map[string]string) (*StorageMemory, error) {
 	return &StorageMemory{
-		storage: map[string]map[string]string{},
+		storage: st,
 	}, nil
 }
 
