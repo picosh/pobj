@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
+	"log/slog"
 	"os"
 	"path"
 	"path/filepath"
@@ -30,14 +31,15 @@ func dirSize(path string) (int64, error) {
 }
 
 type StorageFS struct {
-	Dir string
+	Dir    string
+	Logger *slog.Logger
 }
 
 var _ ObjectStorage = &StorageFS{}
 var _ ObjectStorage = (*StorageFS)(nil)
 
-func NewStorageFS(dir string) (*StorageFS, error) {
-	return &StorageFS{Dir: dir}, nil
+func NewStorageFS(logger *slog.Logger, dir string) (*StorageFS, error) {
+	return &StorageFS{Logger: logger, Dir: dir}, nil
 }
 
 func (s *StorageFS) GetBucket(name string) (Bucket, error) {
@@ -46,6 +48,7 @@ func (s *StorageFS) GetBucket(name string) (Bucket, error) {
 		Name: name,
 		Path: dirPath,
 	}
+	s.Logger.Info("get bucket", "dir", dirPath)
 
 	info, err := os.Stat(dirPath)
 	if os.IsNotExist(err) {
@@ -65,12 +68,15 @@ func (s *StorageFS) GetBucket(name string) (Bucket, error) {
 }
 
 func (s *StorageFS) UpsertBucket(name string) (Bucket, error) {
+	s.Logger.Info("upsert bucket", "name", name)
 	bucket, err := s.GetBucket(name)
 	if err == nil {
 		return bucket, nil
 	}
 
-	err = os.MkdirAll(bucket.Path, os.ModePerm)
+	dir := filepath.Join(s.Dir, bucket.Path)
+	s.Logger.Info("bucket not found, creating", "dir", dir, "err", err)
+	err = os.MkdirAll(dir, os.ModePerm)
 	if err != nil {
 		return bucket, err
 	}

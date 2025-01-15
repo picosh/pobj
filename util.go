@@ -40,5 +40,5 @@ func EnvDriverDetector(logger *slog.Logger) (storage.ObjectStorage, error) {
 	// implied driver == "fs"
 	storageDir := GetEnv("OBJECT_URL", "./.storage")
 	logger.Info("object config detected", "dir", storageDir)
-	return storage.NewStorageFS(storageDir)
+	return storage.NewStorageFS(logger, storageDir)
 }
