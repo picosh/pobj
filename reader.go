@@ -10,10 +10,10 @@ import (
 )
 
 type AllReaderAt struct {
-	Reader utils.ReaderAtCloser
+	Reader utils.ReadAndReaderAtCloser
 }
 
-func NewAllReaderAt(reader utils.ReaderAtCloser) *AllReaderAt {
+func NewAllReaderAt(reader utils.ReadAndReaderAtCloser) *AllReaderAt {
 	return &AllReaderAt{reader}
 }
 

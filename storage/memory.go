@@ -62,7 +62,7 @@ func (s *StorageMemory) DeleteBucket(bucket Bucket) error {
 	return nil
 }
 
-func (s *StorageMemory) GetObject(bucket Bucket, fpath string) (utils.ReaderAtCloser, *ObjectInfo, error) {
+func (s *StorageMemory) GetObject(bucket Bucket, fpath string) (utils.ReadAndReaderAtCloser, *ObjectInfo, error) {
 	objInfo := &ObjectInfo{
 		LastModified: time.Time{},
 		Metadata:     nil,
@@ -75,7 +75,7 @@ func (s *StorageMemory) GetObject(bucket Bucket, fpath string) (utils.ReaderAtCl
 	}
 
 	objInfo.Size = int64(len(dat))
-	reader := utils.NopReaderAtCloser(strings.NewReader(dat))
+	reader := utils.NopReadAndReaderAtCloser(strings.NewReader(dat))
 	return reader, objInfo, nil
 }
 

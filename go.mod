@@ -1,6 +1,12 @@
 module github.com/picosh/pobj
 
-go 1.22
+go 1.24
+
+toolchain go1.24.0
+
+replace github.com/picosh/send => ../send
+
+replace github.com/picosh/go-rsync-receiver => ../go-rsync-receiver
 
 require (
 	github.com/aws/aws-sdk-go-v2 v1.30.4
@@ -17,7 +23,6 @@ require (
 )
 
 require (
-	github.com/DavidGamba/go-getoptions v0.29.0 // indirect
 	github.com/anmitsu/go-shlex v0.0.0-20200514113438-38f4b401e2be // indirect
 	github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.6.4 // indirect
 	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.16.12 // indirect
@@ -41,7 +46,6 @@ require (
 	github.com/go-ole/go-ole v1.3.0 // indirect
 	github.com/golang-jwt/jwt/v4 v4.5.0 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
-	github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510 // indirect
 	github.com/google/uuid v1.4.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/klauspost/compress v1.17.2 // indirect
@@ -61,7 +65,7 @@ require (
 	github.com/muesli/reflow v0.3.0 // indirect
 	github.com/muesli/termenv v0.15.2 // indirect
 	github.com/philhofer/fwd v1.1.2 // indirect
-	github.com/picosh/go-rsync-receiver v0.0.0-20240709135253-1daf4b12a9fc // indirect
+	github.com/picosh/go-rsync-receiver v0.0.0-20250213155332-9a9558ff1929 // indirect
 	github.com/pkg/sftp v1.13.6 // indirect
 	github.com/power-devops/perfstat v0.0.0-20221212215047-62379fc7944b // indirect
 	github.com/prometheus/client_model v0.5.0 // indirect
@@ -82,7 +86,7 @@ require (
 	golang.org/x/crypto v0.17.0 // indirect
 	golang.org/x/exp v0.0.0-20231108232855-2478ac86f678 // indirect
 	golang.org/x/net v0.18.0 // indirect
-	golang.org/x/sync v0.5.0 // indirect
+	golang.org/x/sync v0.11.0 // indirect
 	golang.org/x/sys v0.15.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	google.golang.org/protobuf v1.31.0 // indirect

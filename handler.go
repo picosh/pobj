@@ -80,7 +80,7 @@ func (h *UploadAssetHandler) Delete(s ssh.Session, entry *utils.FileEntry) error
 	return h.Cfg.Storage.DeleteObject(bucket, objectFileName)
 }
 
-func (h *UploadAssetHandler) Read(s ssh.Session, entry *utils.FileEntry) (os.FileInfo, utils.ReaderAtCloser, error) {
+func (h *UploadAssetHandler) Read(s ssh.Session, entry *utils.FileEntry) (os.FileInfo, utils.ReadAndReaderAtCloser, error) {
 	fileInfo := &utils.VirtualFile{
 		FName:    filepath.Base(entry.Filepath),
 		FIsDir:   false,
@@ -229,7 +229,7 @@ func (h *UploadAssetHandler) Write(s ssh.Session, entry *utils.FileEntry) (strin
 	return url, nil
 }
 
-func (h *UploadAssetHandler) validateAsset(data *FileData) (bool, error) {
+func (h *UploadAssetHandler) validateAsset(_ *FileData) (bool, error) {
 	return true, nil
 }
 
@@ -258,7 +258,7 @@ func (h *UploadAssetHandler) writeAsset(s ssh.Session, data *FileData) error {
 	_, _, err = h.Cfg.Storage.PutObject(
 		data.Bucket,
 		objectFileName,
-		utils.NopReaderAtCloser(reader),
+		utils.NopReadAndReaderAtCloser(reader),
 		data.FileEntry,
 	)
 	if err != nil {
