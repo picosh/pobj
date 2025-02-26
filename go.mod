@@ -4,9 +4,9 @@ go 1.24
 
 toolchain go1.24.0
 
-replace github.com/picosh/send => ../send
+// replace github.com/picosh/send => ../send
 
-replace github.com/picosh/go-rsync-receiver => ../go-rsync-receiver
+// replace github.com/picosh/go-rsync-receiver => ../go-rsync-receiver
 
 require (
 	github.com/aws/aws-sdk-go-v2 v1.30.4
@@ -19,7 +19,7 @@ require (
 	github.com/charmbracelet/wish v1.2.0
 	github.com/minio/madmin-go/v3 v3.0.29
 	github.com/minio/minio-go/v7 v7.0.63
-	github.com/picosh/send v0.0.0-20241008013240-6fdbff00f848
+	github.com/picosh/send v0.0.0-20250226204721-03aad51a1f7d
 )
 
 require (
@@ -65,7 +65,7 @@ require (
 	github.com/muesli/reflow v0.3.0 // indirect
 	github.com/muesli/termenv v0.15.2 // indirect
 	github.com/philhofer/fwd v1.1.2 // indirect
-	github.com/picosh/go-rsync-receiver v0.0.0-20250213155332-9a9558ff1929 // indirect
+	github.com/picosh/go-rsync-receiver v0.0.0-20250226204508-de154908d143 // indirect
 	github.com/pkg/sftp v1.13.6 // indirect
 	github.com/power-devops/perfstat v0.0.0-20221212215047-62379fc7944b // indirect
 	github.com/prometheus/client_model v0.5.0 // indirect
