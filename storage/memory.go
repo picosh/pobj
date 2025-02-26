@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/picosh/send/utils"
@@ -13,6 +14,7 @@ import (
 
 type StorageMemory struct {
 	storage map[string]map[string]string
+	mu      sync.RWMutex
 }
 
 var _ ObjectStorage = &StorageMemory{}
@@ -25,6 +27,9 @@ func NewStorageMemory(st map[string]map[string]string) (*StorageMemory, error) {
 }
 
 func (s *StorageMemory) GetBucket(name string) (Bucket, error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
 	bucket := Bucket{
 		Name: name,
 		Path: name,
@@ -44,11 +49,17 @@ func (s *StorageMemory) UpsertBucket(name string) (Bucket, error) {
 		return bucket, nil
 	}
 
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
 	s.storage[name] = map[string]string{}
 	return bucket, nil
 }
 
 func (s *StorageMemory) GetBucketQuota(bucket Bucket) (uint64, error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
 	objects := s.storage[bucket.Path]
 	size := 0
 	for _, val := range objects {
@@ -58,11 +69,17 @@ func (s *StorageMemory) GetBucketQuota(bucket Bucket) (uint64, error) {
 }
 
 func (s *StorageMemory) DeleteBucket(bucket Bucket) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
 	delete(s.storage, bucket.Path)
 	return nil
 }
 
 func (s *StorageMemory) GetObject(bucket Bucket, fpath string) (utils.ReadAndReaderAtCloser, *ObjectInfo, error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
 	if !strings.HasPrefix(fpath, "/") {
 		fpath = "/" + fpath
 	}
@@ -84,6 +101,9 @@ func (s *StorageMemory) GetObject(bucket Bucket, fpath string) (utils.ReadAndRea
 }
 
 func (s *StorageMemory) PutObject(bucket Bucket, fpath string, contents io.Reader, entry *utils.FileEntry) (string, int64, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
 	d, err := io.ReadAll(contents)
 	if err != nil {
 		return "", 0, err
@@ -94,11 +114,17 @@ func (s *StorageMemory) PutObject(bucket Bucket, fpath string, contents io.Reade
 }
 
 func (s *StorageMemory) DeleteObject(bucket Bucket, fpath string) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
 	delete(s.storage[bucket.Path], fpath)
 	return nil
 }
 
 func (s *StorageMemory) ListBuckets() ([]string, error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
 	buckets := []string{}
 	for key := range s.storage {
 		buckets = append(buckets, key)
@@ -107,6 +133,9 @@ func (s *StorageMemory) ListBuckets() ([]string, error) {
 }
 
 func (s *StorageMemory) ListObjects(bucket Bucket, dir string, recursive bool) ([]os.FileInfo, error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
 	var fileList []os.FileInfo
 
 	resolved := dir
