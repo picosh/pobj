@@ -52,7 +52,7 @@ func (s *StorageMemory) GetBucketQuota(bucket Bucket) (uint64, error) {
 	objects := s.storage[bucket.Path]
 	size := 0
 	for _, val := range objects {
-		size += len(val)
+		size += len([]byte(val))
 	}
 	return uint64(size), nil
 }
@@ -62,7 +62,11 @@ func (s *StorageMemory) DeleteBucket(bucket Bucket) error {
 	return nil
 }
 
-func (s *StorageMemory) GetObject(bucket Bucket, fpath string) (utils.ReaderAtCloser, *ObjectInfo, error) {
+func (s *StorageMemory) GetObject(bucket Bucket, fpath string) (utils.ReadAndReaderAtCloser, *ObjectInfo, error) {
+	if !strings.HasPrefix(fpath, "/") {
+		fpath = "/" + fpath
+	}
+
 	objInfo := &ObjectInfo{
 		LastModified: time.Time{},
 		Metadata:     nil,
@@ -74,19 +78,19 @@ func (s *StorageMemory) GetObject(bucket Bucket, fpath string) (utils.ReaderAtCl
 		return nil, objInfo, fmt.Errorf("object does not exist: %s", fpath)
 	}
 
-	objInfo.Size = int64(len(dat))
-	reader := utils.NopReaderAtCloser(strings.NewReader(dat))
+	objInfo.Size = int64(len([]byte(dat)))
+	reader := utils.NopReadAndReaderAtCloser(strings.NewReader(dat))
 	return reader, objInfo, nil
 }
 
 func (s *StorageMemory) PutObject(bucket Bucket, fpath string, contents io.Reader, entry *utils.FileEntry) (string, int64, error) {
-	buf := new(strings.Builder)
-	size, err := io.Copy(buf, contents)
+	d, err := io.ReadAll(contents)
 	if err != nil {
 		return "", 0, err
 	}
-	s.storage[bucket.Path][fpath] = buf.String()
-	return fmt.Sprintf("%s%s", bucket.Path, fpath), size, nil
+
+	s.storage[bucket.Path][fpath] = string(d)
+	return fmt.Sprintf("%s%s", bucket.Path, fpath), int64(len(d)), nil
 }
 
 func (s *StorageMemory) DeleteObject(bucket Bucket, fpath string) error {
@@ -104,7 +108,12 @@ func (s *StorageMemory) ListBuckets() ([]string, error) {
 
 func (s *StorageMemory) ListObjects(bucket Bucket, dir string, recursive bool) ([]os.FileInfo, error) {
 	var fileList []os.FileInfo
+
 	resolved := dir
+
+	if !strings.HasPrefix(resolved, "/") {
+		resolved = "/" + resolved
+	}
 
 	objects := s.storage[bucket.Path]
 	// dir is actually an object
@@ -113,7 +122,7 @@ func (s *StorageMemory) ListObjects(bucket Bucket, dir string, recursive bool) (
 		fileList = append(fileList, &utils.VirtualFile{
 			FName:    filepath.Base(resolved),
 			FIsDir:   false,
-			FSize:    int64(len(oval)),
+			FSize:    int64(len([]byte(oval))),
 			FModTime: time.Time{},
 		})
 		return fileList, nil
@@ -153,14 +162,14 @@ func (s *StorageMemory) ListObjects(bucket Bucket, dir string, recursive bool) (
 			fileList = append(fileList, &utils.VirtualFile{
 				FName:    fname,
 				FIsDir:   false,
-				FSize:    int64(len(val)),
+				FSize:    int64(len([]byte(val))),
 				FModTime: time.Time{},
 			})
 		} else if resolved == dirKey || trimRes == dirKey {
 			fileList = append(fileList, &utils.VirtualFile{
 				FName:    fname,
 				FIsDir:   false,
-				FSize:    int64(len(val)),
+				FSize:    int64(len([]byte(val))),
 				FModTime: time.Time{},
 			})
 		}

@@ -207,7 +207,7 @@ func (s *StorageS3) DeleteBucket(bucket Bucket) error {
 	return err
 }
 
-func (s *StorageS3) GetObject(bucket Bucket, fpath string) (utils.ReaderAtCloser, *ObjectInfo, error) {
+func (s *StorageS3) GetObject(bucket Bucket, fpath string) (utils.ReadAndReaderAtCloser, *ObjectInfo, error) {
 	input := &s3.GetObjectInput{
 		Bucket: aws.String(bucket.Name),
 		Key:    aws.String(fpath),
@@ -239,7 +239,7 @@ func (s *StorageS3) GetObject(bucket Bucket, fpath string) (utils.ReaderAtCloser
 
 	// Create a bytes.Reader which implements io.ReaderAt
 	body := bytes.NewReader(data)
-	content := utils.NopReaderAtCloser(body)
+	content := utils.NopReadAndReaderAtCloser(body)
 
 	return content, objInfo, nil
 }

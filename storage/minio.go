@@ -152,7 +152,7 @@ func (s *StorageMinio) DeleteBucket(bucket Bucket) error {
 	return s.Client.RemoveBucket(context.TODO(), bucket.Name)
 }
 
-func (s *StorageMinio) GetObject(bucket Bucket, fpath string) (utils.ReaderAtCloser, *ObjectInfo, error) {
+func (s *StorageMinio) GetObject(bucket Bucket, fpath string) (utils.ReadAndReaderAtCloser, *ObjectInfo, error) {
 	objInfo := &ObjectInfo{
 		Size:         0,
 		LastModified: time.Time{},
