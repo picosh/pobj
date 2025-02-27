@@ -61,7 +61,7 @@ func NewUploadAssetHandler(cfg *Config) *UploadAssetHandler {
 	}
 }
 
-func (h *UploadAssetHandler) GetLogger() *slog.Logger {
+func (h *UploadAssetHandler) GetLogger(s ssh.Session) *slog.Logger {
 	return h.Cfg.Logger
 }
 
