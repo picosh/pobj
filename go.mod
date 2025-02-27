@@ -19,7 +19,7 @@ require (
 	github.com/charmbracelet/wish v1.2.0
 	github.com/minio/madmin-go/v3 v3.0.29
 	github.com/minio/minio-go/v7 v7.0.63
-	github.com/picosh/send v0.0.0-20250227050705-0c2cd3b14935
+	github.com/picosh/send v0.0.0-20250227052342-0edee02f42c8
 )
 
 require (
