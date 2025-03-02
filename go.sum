@@ -120,10 +120,10 @@ github.com/muesli/termenv v0.15.2 h1:GohcuySI0QmI3wN8Ok9PtKGkgkFIk7y6Vpb5PvrY+Wo
 github.com/muesli/termenv v0.15.2/go.mod h1:Epx+iuz8sNs7mNKhxzH4fWXGNpZwUaJKRS1noLXviQ8=
 github.com/philhofer/fwd v1.1.2 h1:bnDivRJ1EWPjUIRXV5KfORO897HTbpFAQddBdE8t7Gw=
 github.com/philhofer/fwd v1.1.2/go.mod h1:qkPdfjR2SIEbspLqpe1tO4n5yICnr2DY7mqEx2tUTP0=
-github.com/picosh/go-rsync-receiver v0.0.0-20250301143036-9c603afca2bd h1:V8GMQO+gG/Y88+YY+WQVvbVHVtiGEFdIZU8YIPa8Sjw=
-github.com/picosh/go-rsync-receiver v0.0.0-20250301143036-9c603afca2bd/go.mod h1:4ZICsr6bESoHP8He9DqROlZiMw4hHHjcbDzhtTTDQzA=
-github.com/picosh/send v0.0.0-20250301143240-17e9114d0a2d h1:DSN/7v+WwVlVHF8WEhuh01QXNKlj/aCjtUBYoGeFMxo=
-github.com/picosh/send v0.0.0-20250301143240-17e9114d0a2d/go.mod h1:14a72O7qweW8HPr66GZyX0ZEMEH3Mot4s0jBPZPfj3c=
+github.com/picosh/go-rsync-receiver v0.0.0-20250302184209-cbf8532bc383 h1:rBJi1AUxmE0NBRC3ISR0gid4Nc2RcjqfY/pro0g8Kfo=
+github.com/picosh/go-rsync-receiver v0.0.0-20250302184209-cbf8532bc383/go.mod h1:4ZICsr6bESoHP8He9DqROlZiMw4hHHjcbDzhtTTDQzA=
+github.com/picosh/send v0.0.0-20250302184451-fd5b2d4ad9a0 h1:dNVVFAz4PIxHqNuISgd+jpKhhFOU4bDELPrbw4MGIk0=
+github.com/picosh/send v0.0.0-20250302184451-fd5b2d4ad9a0/go.mod h1:mMDxKUe+wQwbc0Cv7k6Of6bGLdn52ageMaJCRB8cDiQ=
 github.com/pkg/sftp v1.13.6 h1:JFZT4XbOU7l77xGSpOdW+pwIMqP044IyjXX6FGyEKFo=
 github.com/pkg/sftp v1.13.6/go.mod h1:tz1ryNURKu77RL+GuCzmoJYxQczL3wLNNpPWagdg4Qk=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
