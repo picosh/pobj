@@ -10,14 +10,14 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/charmbracelet/ssh"
+	"github.com/picosh/pico/pssh"
 	"github.com/picosh/pobj/storage"
 	"github.com/picosh/send/utils"
 )
 
 type ctxBucketKey struct{}
 
-func getBucket(ctx ssh.Context) (storage.Bucket, error) {
+func getBucket(ctx *pssh.SSHServerConnSession) (storage.Bucket, error) {
 	bucket, ok := ctx.Value(ctxBucketKey{}).(storage.Bucket)
 	if !ok {
 		return bucket, fmt.Errorf("bucket not set on `ssh.Context()` for connection")
@@ -27,7 +27,7 @@ func getBucket(ctx ssh.Context) (storage.Bucket, error) {
 	}
 	return bucket, nil
 }
-func setBucket(ctx ssh.Context, bucket storage.Bucket) {
+func setBucket(ctx *pssh.SSHServerConnSession, bucket storage.Bucket) {
 	ctx.SetValue(ctxBucketKey{}, bucket)
 }
 
@@ -61,13 +61,13 @@ func NewUploadAssetHandler(cfg *Config) *UploadAssetHandler {
 	}
 }
 
-func (h *UploadAssetHandler) GetLogger(s ssh.Session) *slog.Logger {
+func (h *UploadAssetHandler) GetLogger(s *pssh.SSHServerConnSession) *slog.Logger {
 	return h.Cfg.Logger
 }
 
-func (h *UploadAssetHandler) Delete(s ssh.Session, entry *utils.FileEntry) error {
+func (h *UploadAssetHandler) Delete(s *pssh.SSHServerConnSession, entry *utils.FileEntry) error {
 	h.Cfg.Logger.Info("deleting file", "file", entry.Filepath)
-	bucket, err := getBucket(s.Context())
+	bucket, err := getBucket(s)
 	if err != nil {
 		h.Cfg.Logger.Error(err.Error())
 		return err
@@ -80,7 +80,7 @@ func (h *UploadAssetHandler) Delete(s ssh.Session, entry *utils.FileEntry) error
 	return h.Cfg.Storage.DeleteObject(bucket, objectFileName)
 }
 
-func (h *UploadAssetHandler) Read(s ssh.Session, entry *utils.FileEntry) (os.FileInfo, utils.ReadAndReaderAtCloser, error) {
+func (h *UploadAssetHandler) Read(s *pssh.SSHServerConnSession, entry *utils.FileEntry) (os.FileInfo, utils.ReadAndReaderAtCloser, error) {
 	fileInfo := &utils.VirtualFile{
 		FName:    filepath.Base(entry.Filepath),
 		FIsDir:   false,
@@ -115,7 +115,7 @@ func (h *UploadAssetHandler) Read(s ssh.Session, entry *utils.FileEntry) (os.Fil
 	return fileInfo, reader, nil
 }
 
-func (h *UploadAssetHandler) List(s ssh.Session, fpath string, isDir bool, recursive bool) ([]os.FileInfo, error) {
+func (h *UploadAssetHandler) List(s *pssh.SSHServerConnSession, fpath string, isDir bool, recursive bool) ([]os.FileInfo, error) {
 	h.Cfg.Logger.Info(
 		"listing path",
 		"dir", fpath,
@@ -169,7 +169,7 @@ func (h *UploadAssetHandler) List(s ssh.Session, fpath string, isDir bool, recur
 	return fileList, nil
 }
 
-func (h *UploadAssetHandler) Validate(s ssh.Session) error {
+func (h *UploadAssetHandler) Validate(s *pssh.SSHServerConnSession) error {
 	var err error
 	userName := s.User()
 
@@ -181,7 +181,7 @@ func (h *UploadAssetHandler) Validate(s ssh.Session) error {
 	if err != nil {
 		return err
 	}
-	setBucket(s.Context(), bucket)
+	setBucket(s, bucket)
 
 	pk, _ := utils.KeyText(s)
 	h.Cfg.Logger.Info(
@@ -193,7 +193,7 @@ func (h *UploadAssetHandler) Validate(s ssh.Session) error {
 	return nil
 }
 
-func (h *UploadAssetHandler) Write(s ssh.Session, entry *utils.FileEntry) (string, error) {
+func (h *UploadAssetHandler) Write(s *pssh.SSHServerConnSession, entry *utils.FileEntry) (string, error) {
 	var origText []byte
 	if b, err := io.ReadAll(entry.Reader); err == nil {
 		origText = b
@@ -204,7 +204,7 @@ func (h *UploadAssetHandler) Write(s ssh.Session, entry *utils.FileEntry) (strin
 	entry.Size = int64(fileSize)
 	userName := s.User()
 
-	bucket, err := getBucket(s.Context())
+	bucket, err := getBucket(s)
 	if err != nil {
 		h.Cfg.Logger.Error(err.Error())
 		return "", err
@@ -233,7 +233,7 @@ func (h *UploadAssetHandler) validateAsset(_ *FileData) (bool, error) {
 	return true, nil
 }
 
-func (h *UploadAssetHandler) writeAsset(s ssh.Session, data *FileData) error {
+func (h *UploadAssetHandler) writeAsset(s *pssh.SSHServerConnSession, data *FileData) error {
 	valid, err := h.validateAsset(data)
 	if !valid {
 		return err

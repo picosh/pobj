@@ -36,13 +36,13 @@ func main() {
 		}
 	}
 
-	handler := pobj.NewUploadAssetHandler(cfg)
+	// handler := pobj.NewUploadAssetHandler(cfg)
 
 	s, err := wish.NewServer(
 		wish.WithAddress(fmt.Sprintf("%s:%s", host, port)),
 		wish.WithHostKeyPath("ssh_data/term_info_ed25519"),
 		wish.WithAuthorizedKeys(keyPath),
-		pobj.WithProxy(handler),
+		// pobj.WithProxy(handler),
 	)
 	if err != nil {
 		logger.Error(err.Error())
